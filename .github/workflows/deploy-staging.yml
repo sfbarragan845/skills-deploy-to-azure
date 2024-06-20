@@ -77,6 +77,9 @@ jobs:
   Deploy-to-Azure:
     runs-on: ubuntu-latest
     needs: Build-Docker-Image
+    permissions:
+      id-token: write
+      contents: read
     name: Deploy app container to Azure
     steps:
       - name: "Login via Azure CLI"
@@ -85,7 +88,10 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: 'token'
+          allow-no-subscriptions: true
+          environment: azurecloud
+          auth-type: id-token
+          
       - uses: azure/docker-login@v1
         with:
           login-server: ${{env.IMAGE_REGISTRY_URL}}
